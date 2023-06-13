@@ -1,15 +1,15 @@
 /*
 ----- ERRORES ACTUALES -----
 - SD no funciona en simultaneo con el LoRa.
-- Al desconectarse de la energia y volverse a prender el sensor magnetico no se reinicia por lo que se debe volver a montar el codigo,
+- Al desconectarse de la energia y volverse a prender el sensor magnetico necesita detectar un iman,
   este problema se observa ya que el sensor se inicializa desde void setup.
-- El encoder optico no funciona correctamente. CAMBIAR PINES.
 - GPS se tarda en triangular.
+- Mirar que proceso se puede realizar en tierra.
 - Revisar exactitud de las variables y precision de la calibracion.
 - Perdida de rendimiento en la ESP32.
-  - Usar multiprocessing
-- Mirar que proceso se puede realizar en tierra
-- Mirar librerias para BME
+  - Usar multiprocessing.
+- El codigo se bloquea debido a que el BME funciona cada segundo.
+  - Esto afecta a la impresion de datos, encoder optico y probablemente GPS.
 */
 
 #include <SPI.h>
@@ -42,6 +42,8 @@
 // #define SD_MOSI 13
 // #define SD_NSS 15
 
+#define ENC_ANEM 34
+
 // ----- Libraries instances -----
 SPIClass LORA_SPI(VSPI);
 // SPIClass SD_SPI(HSPI);
@@ -57,6 +59,8 @@ void setup() {
   gps_serial.begin(9600, SERIAL_8N1, ESP_RX, ESP_TX); // initialize Serial1 at 9600 baud, with 8 data bits, no parity, and 1 stop bit, using pins 16 (RX) and 17 (TX)
   LORA_SPI.begin(LORA_SCK, LORA_MISO, LORA_MOSI, LORA_NSS);
   // SD_SPI.begin(SD_SCK, SD_MISO, SD_MOSI, SD_NSS);
+  
+  pinMode(ENC_ANEM, INPUT_PULLUP);
   
   // Modules pin configuration
   LoRa.setPins(LORA_NSS, LORA_RST, LORA_DI0);

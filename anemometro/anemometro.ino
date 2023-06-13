@@ -1,6 +1,6 @@
-volatile int cont = 0;
-volatile int rpm = 0;
-volatile int viento= 0;
+int cont = 0;
+int rpm = 0;
+float viento = 0;
 bool state = LOW;
 bool prevState = LOW;
 unsigned long previousTime = 0;
@@ -11,7 +11,7 @@ unsigned long currentTime = 0;
 
 void setup() {
   Serial.begin(115200);
-  // pinMode(PINENCODER, INPUT_PULLUP);
+  pinMode(PINENCODER, INPUT_PULLUP);
 }
 
 
@@ -27,12 +27,9 @@ void loop() {
 
 void speedAnemometer() {
     rpm = (60*cont)/20;
-    Serial.print("rpm: ");
-    Serial.print(rpm);
-    viento =  (rpm*6.2832/60)*(0.025);
-    Serial.print("  Velociad viento: ");
-    Serial.println(viento);
-    cont = 0;  
+    viento = (rpm*(6.2832/60))*(0.025);
+    Serial.print(rpm) + Serial.print(",") + Serial.println(viento);
+    cont = 0;
 }
 
 void countAnemometerPulses() {
