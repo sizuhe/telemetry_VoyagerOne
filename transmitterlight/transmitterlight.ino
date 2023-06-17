@@ -38,6 +38,8 @@
 // #define SD_MOSI 13
 // #define SD_NSS 15
 
+#define ENC_ANEM 34
+
 // ----- Libraries instances -----
 SPIClass LORA_SPI(VSPI);
 // SPIClass SD_SPI(HSPI);
@@ -47,9 +49,8 @@ TinyGPSPlus gps;
 
 void setup() {
 
-  pinMode( 34 , INPUT );
-
-  attachInterrupt(digitalPinToInterrupt(34),isr,RISING);
+  pinMode(ENC_ANEM , INPUT);
+  attachInterrupt(digitalPinToInterrupt(ENC_ANEM),isr,RISING);
 
   // ----- INITIALIZATION -----
   Serial.begin(115200);
@@ -96,7 +97,7 @@ void loop() {
   String dataSensors = sensors_getData();
   String dataEncoders = encoders_getData();
 
-  // humidity[%], temperature[ºc], pressure[hPa], altitude[m], acelZ[g], magTotal[uT], headDegrees[º], gasResistance, lat, long, windrpm, windspeed, windangle [º], anglequad. 
+  // humidity[%], temperature[ºc], pressure[hPa], altitude[m], acelZ[g], magTotal[uT], headDegrees[º], gasResistance, lat, long, windrpm, windangle [º], anglequad. 
   String dataBuffer = dataSensors + "," + dataGPS + "," + dataEncoders;   // Main DataBuffer
 
   // Sending dataBuffer through LoRa
