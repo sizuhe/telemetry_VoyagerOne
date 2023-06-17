@@ -17,8 +17,6 @@ float GRAVITY = 9.77;    // https://www.sensorsone.com/local-gravity-calculator/
 float SCALE_Z = 1.0;
 float offsetZ;
 
-
-
 void sensors_begin() {
   if (!accel.begin()) {
     Serial.println("Accelerometer init failed");
@@ -39,7 +37,6 @@ void sensors_begin() {
   bme.setGasHeater(320, 150); // 320*C for 150 ms
 }
 
-
 void sensors_calibration() {
   // ----- ACCELEROMETER -----
   for (int i = 0; i < 100; i++) {
@@ -53,7 +50,6 @@ void sensors_calibration() {
   // offsetZ /= 100.0;
   SCALE_Z = -1.0 / (offsetZ - GRAVITY);
 }
-
 
 String sensors_getData() {
   sensors_event_t accelEvent, magEvent;

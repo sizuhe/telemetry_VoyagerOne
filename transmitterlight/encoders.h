@@ -1,14 +1,5 @@
 #include <Wire.h>
 
-volatile int cont = 0;
-volatile int rpm = 0;
-volatile int viento = 0;
-String windspeed = " ";
-unsigned long previousTime = 0;
-unsigned long currentTime = 0;
-bool state = LOW;
-bool prevState = LOW;
-
 int magnetStatus = 0;                        //value of the status register (MD, ML, MH)
 int lowbyte;                                 //raw angle 7:0
 word highbyte;                               //raw angle 7:0 and 11:8
@@ -80,7 +71,6 @@ void readRawAngle() {
   degAngle = rawAngle * 0.087890625;
 }
 
-
 float correctAngle() {
   //recalculate angle
   correctedAngle = degAngle - startAngle;  //this tares the position
@@ -91,7 +81,6 @@ float correctAngle() {
 
   return correctedAngle;
 }
-
 
 int checkQuadrant() {
   /*
