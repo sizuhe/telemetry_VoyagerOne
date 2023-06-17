@@ -1,1 +1,9 @@
-Estos son nuestros archivos para el CanSat
+# ***Voyager One***
+
+*These Codes describe how work our CanSat's electronics for the competition Latin American Space Challenge **(LASC)***
+
+This proyect is possible by the investigation group --> **Voyager** from Universidad de Antioquia.
+
+![Alt text](https://grupoastra.github.io/icons/voyager.png)
+
+Link: https://grupoastra.github.io/voyager/
