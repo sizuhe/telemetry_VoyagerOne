@@ -3,18 +3,14 @@
 - SD no funciona en simultaneo con el LoRa.
 - Al desconectarse de la energia y volverse a prender el sensor magnetico no se reinicia por lo que se debe volver a montar el codigo,
   este problema se observa ya que el sensor se inicializa desde void setup.
-- El encoder optico no funciona correctamente. CAMBIAR PINES.
 - GPS se tarda en triangular.
 - Revisar exactitud de las variables y precision de la calibracion.
-- Perdida de rendimiento en la ESP32.
-  - Usar multiprocessing
 - Mirar que proceso se puede realizar en tierra
-- Mirar librerias para BME
 */
 
 #include <SPI.h>
 #include <LoRa.h>
-#include <SD.h>
+//#include <SD.h>
 #include <TinyGPS++.h>
 #include "sensors.h"
 #include "encoders.h"
@@ -49,9 +45,12 @@ SPIClass LORA_SPI(VSPI);
 HardwareSerial gps_serial(1);
 TinyGPSPlus gps;
 
-
-
 void setup() {
+
+  pinMode( 34 , INPUT );
+
+  attachInterrupt(digitalPinToInterrupt(34),isr,RISING);
+
   // ----- INITIALIZATION -----
   Serial.begin(115200);
   gps_serial.begin(9600, SERIAL_8N1, ESP_RX, ESP_TX); // initialize Serial1 at 9600 baud, with 8 data bits, no parity, and 1 stop bit, using pins 16 (RX) and 17 (TX)
@@ -81,9 +80,8 @@ void setup() {
   // }
 }
 
-
-
 void loop() {
+
   while (gps_serial.available() > 0) {
     if (gps.encode(gps_serial.read())) {
       if (gps.location.isValid()) {
@@ -96,10 +94,10 @@ void loop() {
   // DataBuffers from sensors
   String dataGPS = String(gps.location.lat(), 6) + "," + String(gps.location.lng(), 6);
   String dataSensors = sensors_getData();
-  // String dataEncoders = encoders_getData();
+  String dataEncoders = encoders_getData();
 
   // humidity[%], temperature[ºc], pressure[hPa], altitude[m], acelZ[g], magTotal[uT], headDegrees[º], gasResistance, lat, long, windrpm, windspeed, windangle [º], anglequad. 
-  String dataBuffer = dataSensors + "," + dataGPS;   // Main DataBuffer
+  String dataBuffer = dataSensors + "," + dataGPS + "," + dataEncoders;   // Main DataBuffer
 
   // Sending dataBuffer through LoRa
   LoRa.beginPacket();
