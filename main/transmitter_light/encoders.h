@@ -1,8 +1,8 @@
 #include <Wire.h>
 
-int cont = 0;
-int rpm = 0;
-float viento = 0;
+volatile int cont = 0;
+volatile int rpm = 0;
+volatile int viento= 0;
 String windspeed = " ";
 unsigned long previousTime = 0;
 unsigned long currentTime = 0;
@@ -27,7 +27,7 @@ float previoustotalAngle = 0; //for the display printing
 // ------ ANENOMETER -----
 String speedAnemometer() {
     rpm = (60*cont)/20;
-    viento = (rpm*6.2832/60)*(0.025);
+    viento =  (rpm*6.2832/60)*(0.025);
     cont = 0;  
     String dataSpeed = String(rpm) + "," + String(viento);
 
@@ -176,7 +176,6 @@ String encoders_getData() {
   countAnemometerPulses();
   readRawAngle();
 
-  // windspeed = speedAnemometer();
   currentTime = millis();
   if (currentTime - previousTime >= 1000) {
     previousTime = currentTime; 

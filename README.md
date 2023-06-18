@@ -1,8 +1,8 @@
 # ***Voyager One***
 
-*These Codes describe how work our CanSat's electronics for the competition Latin American Space Challenge **(LASC)***
+These codes describe how our CanSat *VoyagerOne* electronics works. Made for the Latin American Space Challenge (*LASC*) competition.
 
-This proyect is possible by the investigation group --> **Voyager** from Universidad de Antioquia.
+This project is being developed in University of Antioquia by *Voyager* student group.
 
 ![Alt text](https://grupoastra.github.io/icons/voyager.png)
 

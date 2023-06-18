@@ -1,15 +1,15 @@
 /*
 ----- ERRORES ACTUALES -----
 - SD no funciona en simultaneo con el LoRa.
-- Al desconectarse de la energia y volverse a prender el sensor magnetico necesita detectar un iman,
+- Al desconectarse de la energia y volverse a prender el sensor magnetico no se reinicia por lo que se debe volver a montar el codigo,
   este problema se observa ya que el sensor se inicializa desde void setup.
+- El encoder optico no funciona correctamente. CAMBIAR PINES.
 - GPS se tarda en triangular.
-- Mirar que proceso se puede realizar en tierra.
 - Revisar exactitud de las variables y precision de la calibracion.
 - Perdida de rendimiento en la ESP32.
-  - Usar multiprocessing.
-- El codigo se bloquea debido a que el BME funciona cada segundo.
-  - Esto afecta a la impresion de datos, encoder optico y probablemente GPS.
+  - Usar multiprocessing
+- Mirar que proceso se puede realizar en tierra
+- Mirar librerias para BME
 */
 
 #include <SPI.h>
@@ -42,8 +42,6 @@
 // #define SD_MOSI 13
 // #define SD_NSS 15
 
-#define ENC_ANEM 34
-
 // ----- Libraries instances -----
 SPIClass LORA_SPI(VSPI);
 // SPIClass SD_SPI(HSPI);
@@ -60,8 +58,6 @@ void setup() {
   LORA_SPI.begin(LORA_SCK, LORA_MISO, LORA_MOSI, LORA_NSS);
   // SD_SPI.begin(SD_SCK, SD_MISO, SD_MOSI, SD_NSS);
   
-  pinMode(ENC_ANEM, INPUT_PULLUP);
-  
   // Modules pin configuration
   LoRa.setPins(LORA_NSS, LORA_RST, LORA_DI0);
 
@@ -76,7 +72,7 @@ void setup() {
   // Initialization and calibration of all modules - HAS TO BE AFTER LORA.BEGIN
   sensors_begin();
   sensors_calibration();
-  encoders_calibration();
+  // encoders_calibration();
 
   // ----- DATA FILE -----
   // dataFile = SD.open("/dataVolta.txt", FILE_WRITE);
@@ -100,15 +96,14 @@ void loop() {
   // DataBuffers from sensors
   String dataGPS = String(gps.location.lat(), 6) + "," + String(gps.location.lng(), 6);
   String dataSensors = sensors_getData();
-  String dataEncoders = encoders_getData();
+  // String dataEncoders = encoders_getData();
 
   // humidity[%], temperature[ºc], pressure[hPa], altitude[m], acelZ[g], magTotal[uT], headDegrees[º], gasResistance, lat, long, windrpm, windspeed, windangle [º], anglequad. 
-  String dataBuffer = dataSensors + "," + dataGPS + "," + dataEncoders;   // Main DataBuffer
+  String dataBuffer = dataSensors + "," + dataGPS;   // Main DataBuffer
 
   // Sending dataBuffer through LoRa
   LoRa.beginPacket();
   LoRa.print(dataBuffer);
-  
   LoRa.endPacket();
 
   // Writing data to SD Card
