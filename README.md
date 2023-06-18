@@ -1,4 +1,4 @@
-# ***Voyager One***
+# Voyager One
 
 These codes describe how our CanSat *VoyagerOne* electronics works. Made for the Latin American Space Challenge (*LASC*) competition.
 
