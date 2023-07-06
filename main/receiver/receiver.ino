@@ -15,7 +15,7 @@
 */
 
 // ----- LORA SETTINGS ------
-#define LORA_FREQ 433E6     // LoRa frequency band
+#define LORA_FREQ 525E6     // LoRa frequency band
 
 
 
@@ -26,6 +26,8 @@ void setup() {
     Serial.println("LoRa init failed");
     while (1);
   }
+
+  LoRa.setGain(18);
 }
 
 
