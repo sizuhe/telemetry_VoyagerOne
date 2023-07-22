@@ -10,8 +10,8 @@
 
 #include <SPI.h>
 #include <LoRa.h>
-//#include <SD.h>
 #include <TinyGPS++.h>
+//#include "SD.h"
 #include "sensors.h"
 #include "encoders.h"
 
@@ -26,6 +26,9 @@
 // ----------
 #define LORA_FREQ 433E6   // LoRa frequency band
 
+
+
+
 // ----- GPS PINS -----
 // UART pin configuration
 #define ESP_RX 16
@@ -36,7 +39,7 @@
 // #define SD_SCK 14
 // #define SD_MISO 26
 // #define SD_MOSI 13
-// #define SD_NSS 15
+// #define SD_CS 15
 
 #define ENC_ANEM 34
 
@@ -56,7 +59,7 @@ void setup() {
   Serial.begin(115200);
   gps_serial.begin(9600, SERIAL_8N1, ESP_RX, ESP_TX); // initialize Serial1 at 9600 baud, with 8 data bits, no parity, and 1 stop bit, using pins 16 (RX) and 17 (TX)
   LORA_SPI.begin(LORA_SCK, LORA_MISO, LORA_MOSI, LORA_NSS);
-  // SD_SPI.begin(SD_SCK, SD_MISO, SD_MOSI, SD_NSS);
+  // SD_SPI.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
   
   // Modules pin configuration
   LoRa.setPins(LORA_NSS, LORA_RST, LORA_DI0);
@@ -65,7 +68,7 @@ void setup() {
   if (!LoRa.begin(LORA_FREQ)) {
     Serial.println("LoRa init failed");
   }
-  // if (!SD.begin(SD_NSS)) {
+  // if (!SD.begin(SD_CS, SD_SPI)) {
   //   Serial.println("SD init failed");
   // }
 
