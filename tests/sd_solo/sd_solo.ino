@@ -8,14 +8,7 @@
 #define SD_MOSI 13
 #define SD_CS 15
 
-// ----- VSPI -----
-// #define SD_SCK 18
-// #define SD_MISO 19
-// #define SD_MOSI 23
-// #define SD_CS 5
-
 SPIClass SD_SPI(HSPI);
-// SPIClass SD_SPI(VSPI);
 File dataFile;
 
 // 4 MHz = 4000000, 10 MHz = 10000000
@@ -32,7 +25,7 @@ void setup() {
 
   dataFile = SD.open("/data.txt", FILE_WRITE);
   if (!dataFile) {
-    Serial.println("Error creating file.");
+    Serial.println("Error creating file");
     return;
   }
 }

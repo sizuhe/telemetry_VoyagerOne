@@ -1,17 +1,14 @@
 /*
 ----- ERRORES ACTUALES -----
-- SD no funciona en simultaneo con el LoRa.
-- Al desconectarse de la energia y volverse a prender el sensor magnetico no se reinicia por lo que se debe volver a montar el codigo,
-  este problema se observa ya que el sensor se inicializa desde void setup.
 - GPS se tarda en triangular.
 - Revisar exactitud de las variables y precision de la calibracion.
-- Mirar que proceso se puede realizar en tierra
+- Mirar que proceso se puede realizar en tierra.
 */
 
 #include <SPI.h>
 #include <LoRa.h>
 #include <TinyGPS++.h>
-//#include "SD.h"
+#include "SD.h"
 #include "sensors.h"
 #include "encoders.h"
 
@@ -26,9 +23,6 @@
 // ----------
 #define LORA_FREQ 433E6   // LoRa frequency band
 
-
-
-
 // ----- GPS PINS -----
 // UART pin configuration
 #define ESP_RX 16
@@ -36,41 +30,55 @@
 
 // ----- SD SETTINGS -----
 // SPI pin configuration
-// #define SD_SCK 14
-// #define SD_MISO 26
-// #define SD_MOSI 13
-// #define SD_CS 15
+#define SD_SCK 14
+#define SD_MISO 26
+#define SD_MOSI 13
+#define SD_CS 15
 
 #define ENC_ANEM 34
 
 // ----- Libraries instances -----
 SPIClass LORA_SPI(VSPI);
-// SPIClass SD_SPI(HSPI);
-// File dataFile;
+SPIClass SD_SPI(HSPI);
+File dataFile;
 HardwareSerial gps_serial(1);
 TinyGPSPlus gps;
 
-void setup() {
+/*
+4 MHz = 4000000, 10 MHz = 10000000
 
+The SD Module has a default SPI speed of 4 MHz and LoRa has a default speed of 10 MHz.
+To work simultaneously in the ESP32 they need to be configured to have the same SPI Speed.
+*/
+
+int SPI_SPEED = 10000000;
+
+
+
+void setup() {
   pinMode(ENC_ANEM , INPUT);
   attachInterrupt(digitalPinToInterrupt(ENC_ANEM),isr,RISING);
 
   // ----- INITIALIZATION -----
-  Serial.begin(115200);
+  Serial.begin(9600);
   gps_serial.begin(9600, SERIAL_8N1, ESP_RX, ESP_TX); // initialize Serial1 at 9600 baud, with 8 data bits, no parity, and 1 stop bit, using pins 16 (RX) and 17 (TX)
   LORA_SPI.begin(LORA_SCK, LORA_MISO, LORA_MOSI, LORA_NSS);
-  // SD_SPI.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
+  SD_SPI.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
   
   // Modules pin configuration
   LoRa.setPins(LORA_NSS, LORA_RST, LORA_DI0);
+  LoRa.setTxPower(20);
+  LoRa.setSignalBandwidth(62.5E3);
+  LoRa.setSpreadingFactor(12);
+
 
   // ----- MODULES INITIALIZATION -----
   if (!LoRa.begin(LORA_FREQ)) {
     Serial.println("LoRa init failed");
   }
-  // if (!SD.begin(SD_CS, SD_SPI)) {
-  //   Serial.println("SD init failed");
-  // }
+  if (!SD.begin(SD_CS, SD_SPI, SPI_SPEED)) {
+    Serial.println("SD init failed");
+  }
 
   // Initialization and calibration of all modules - HAS TO BE AFTER LORA.BEGIN
   sensors_begin();
@@ -78,14 +86,14 @@ void setup() {
   encoders_calibration();
 
   // ----- DATA FILE -----
-  // dataFile = SD.open("/dataVolta.txt", FILE_WRITE);
-  // if (!dataFile) {
-  //   Serial.println("Error creating dataVolta.");
-  // }
+  dataFile = SD.open("/dataVolta.txt", FILE_WRITE);
+  if (!dataFile) {
+    Serial.println("Error creating dataVolta.");
+  }
 }
 
-void loop() {
 
+void loop() {
   while (gps_serial.available() > 0) {
     if (gps.encode(gps_serial.read())) {
       if (gps.location.isValid()) {
@@ -109,9 +117,9 @@ void loop() {
   LoRa.endPacket();
 
   // Writing data to SD Card
-  // dataFile.println(dataBuffer);
-  // dataFile.flush();
+  dataFile.println(dataBuffer);
+  dataFile.flush();
 
   // ----- DEBUGGING -----
-  Serial.println(dataBuffer);
+  // Serial.println(dataBuffer);
 }
