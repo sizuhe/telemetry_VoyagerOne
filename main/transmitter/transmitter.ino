@@ -8,9 +8,11 @@
 #include <SPI.h>
 #include <LoRa.h>
 #include <TinyGPS++.h>
-#include "SD.h"
+#include <SD.h>
 #include "sensors.h"
 #include "encoders.h"
+#include "gps.h"
+#include "sd.h"
 
 // ----- LORA SETTINGS -----
 // SPI pin configuration
@@ -40,9 +42,7 @@
 // ----- Libraries instances -----
 SPIClass LORA_SPI(VSPI);
 SPIClass SD_SPI(HSPI);
-File dataFile;
-HardwareSerial gps_serial(1);
-TinyGPSPlus gps;
+
 
 /*
 4 MHz = 4000000, 10 MHz = 10000000
@@ -86,30 +86,22 @@ void setup() {
   encoders_calibration();
 
   // ----- DATA FILE -----
-  dataFile = SD.open("/dataVolta.txt", FILE_WRITE);
-  if (!dataFile) {
-    Serial.println("Error creating dataVolta.");
-  }
+  gps_updateData();
+  datetime = gps_getDatetime();
+  create_file_sd(datetime);
 }
 
 
 void loop() {
-  while (gps_serial.available() > 0) {
-    if (gps.encode(gps_serial.read())) {
-      if (gps.location.isValid()) {
-        float latitude = gps.location.lat();
-        float longitude = gps.location.lng();
-      }
-    }
-  }
-
-  // DataBuffers from sensors
-  String dataGPS = String(gps.location.lat(), 6) + "," + String(gps.location.lng(), 6) + "," + String(gps.altitude.meters()) + "," + String(gps.speed.kmph());
+  gps_updateData();
+  datetime = gps_getDatetime();
+  dataGPS = gps_getLocation();
+  dataWindDir = gps_getWindDirection();
   String dataSensors = sensors_getData();
   String dataEncoders = encoders_getData();
 
   // BME680 [humidity[%], temperature[ºc], pressure[hPa], altitude[m], acelZ[g], magTotal[uT], headDegrees[º], gasResistance] | GPS [lat, long, altitude[m], speed[kph]] | ENCONDER [windrpm]. 
-  String dataBuffer = dataSensors + "," + dataGPS + "," + dataEncoders;   // Main DataBuffer
+  String dataBuffer = datetime + ":  " + dataSensors + " | " + dataGPS + " | " + dataEncoders + " | " + dataWindDir;   // Main DataBuffer
 
   // Sending dataBuffer through LoRa
   LoRa.beginPacket();
@@ -117,9 +109,7 @@ void loop() {
   LoRa.endPacket();
 
   // Writing data to SD Card
-  dataFile.println(dataBuffer);
-  dataFile.flush();
-
+  save_data_sd(datetime,dataBuffer);
   // ----- DEBUGGING -----
-  // Serial.println(dataBuffer);
+  Serial.println(dataBuffer);
 }

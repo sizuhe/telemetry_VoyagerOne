@@ -21,7 +21,6 @@ void encoders_calibration() {
 }
 
 String encoders_getData() {
-  String dataBuffer = String(velocity);
-
+  String dataBuffer = " windVel: " + String(velocity);
   return dataBuffer;
 }
