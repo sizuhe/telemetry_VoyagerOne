@@ -26,7 +26,8 @@ void gps_updateData() {
 
 String gps_getLocation() {  
   if (gps.location.isValid()) {
-    dataGPS = "lat: " + String(gps.location.lat(), 6) + "," + " lng: " + String(gps.location.lng(), 6) + "," + " alt gps: " + String(gps.altitude.meters()) + "," + " Vel gps: " + String(gps.speed.kmph());
+    //dataGPS = "lat: " + String(gps.location.lat(), 6) + "," + " lng: " + String(gps.location.lng(), 6) + "," + " alt gps: " + String(gps.altitude.meters()) + "," + " Vel gps: " + String(gps.speed.kmph());
+    dataGPS = String(gps.location.lat(), 6) + "," + String(gps.location.lng(), 6) + "," + String(gps.altitude.meters()) + "," + String(gps.speed.kmph());
     }else {
     dataGPS = "";
   }

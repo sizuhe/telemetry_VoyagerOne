@@ -80,8 +80,9 @@ String sensors_getData() {
 
   // ----- DATAPACKET INFO -----
   // humidity[%], temperature[ºc], pressure[hPa], altitude[m], acelZ[g], magTotal[uT], headDegrees[º], gasResistance
-  String dataPacket = "humed: " + String(bme.humidity) + "," + " temp: " + String(bme.temperature) + "," + " press: " + String(bme.pressure/100.0) + "," + " alt bme: " + String(bme.readAltitude(SEALEVELPRESSURE_HPA)) + "," 
-                    + " acelZ: " + String(accelZ) + "," + " magTotal: " + String(magneticTotal) + "," + " headDeg: " + String(headingDegrees) + "," + " gasRes: " + String(bme.gas_resistance);
+  //String dataPacket = "humed: " + String(bme.humidity) + "," + " temp: " + String(bme.temperature) + "," + " press: " + String(bme.pressure/100.0) + "," + " alt bme: " + String(bme.readAltitude(SEALEVELPRESSURE_HPA)) + "," + " acelZ: " + String(accelZ) + "," + " magTotal: " + String(magneticTotal) + "," + " headDeg: " + String(headingDegrees) + "," + " gasRes: " + String(bme.gas_resistance);
+
+    String dataPacket = String(bme.humidity) + "," + String(bme.temperature) + "," + String(bme.pressure/100.0) + "," + String(bme.readAltitude(SEALEVELPRESSURE_HPA)) + "," + String(accelZ) + "," + String(magneticTotal) + "," + String(headingDegrees) + "," + String(bme.gas_resistance);
 
   return dataPacket;
 }
