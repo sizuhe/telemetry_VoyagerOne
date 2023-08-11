@@ -6,6 +6,8 @@ int numFile = 1; //used only if the datetime has not synchronized
 
 File dataFile;
 
+
+
 // sd functions
 void create_file_sd(String datetime) {
   //rename file
@@ -25,6 +27,7 @@ void create_file_sd(String datetime) {
     Serial.printf("Creando to file: %s\n", nameFile);
   }
 }
+
 
 void save_data_sd(String datetime, String dataBuffer) {
     if (regist <= 50) {

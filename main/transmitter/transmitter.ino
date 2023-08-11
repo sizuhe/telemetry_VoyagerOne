@@ -43,7 +43,6 @@
 SPIClass LORA_SPI(VSPI);
 SPIClass SD_SPI(HSPI);
 
-
 /*
 4 MHz = 4000000, 10 MHz = 10000000
 
@@ -68,7 +67,7 @@ void setup() {
   // Modules pin configuration
   LoRa.setPins(LORA_NSS, LORA_RST, LORA_DI0);
   LoRa.setTxPower(20);
-  LoRa.setSignalBandwidth(62.5E3);
+  LoRa.setSignalBandwidth(9);
   LoRa.setSpreadingFactor(12);
 
 
@@ -100,8 +99,8 @@ void loop() {
   String dataSensors = sensors_getData();
   String dataEncoders = encoders_getData();
 
-  // BME680 [humidity[%], temperature[ºc], pressure[hPa], altitude[m], acelZ[g], magTotal[uT], headDegrees[º], gasResistance] | GPS [lat, long, altitude[m], speed[kph]] | ENCONDER [windrpm]. 
-  String dataBuffer = datetime + ":  " + dataSensors + " | " + dataGPS + " | " + dataEncoders + " | " + dataWindDir;   // Main DataBuffer
+  // BME680 [humidity[%], temperature[ºc], pressure[hPa], altitude[m], acelZ[g], magTotal[uT], headDegrees[º], gasResistance] | GPS [lat, long, altitude[m], speed[kph]] | ENCONDER [windrpm], [windDirection]. 
+  String dataBuffer = datetime + " " + dataSensors + " " + dataGPS + " " + dataEncoders + " " + dataWindDir;   // Main DataBuffer
 
   // Sending dataBuffer through LoRa
   LoRa.beginPacket();
@@ -110,6 +109,7 @@ void loop() {
 
   // Writing data to SD Card
   save_data_sd(datetime,dataBuffer);
+  
   // ----- DEBUGGING -----
   Serial.println(dataBuffer);
 }
