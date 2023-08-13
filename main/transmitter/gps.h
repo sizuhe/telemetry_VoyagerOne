@@ -4,7 +4,7 @@ HardwareSerial gps_serial(1);
 // ----- Location -----
 String dataGPS = "";
 // ----- datetime -----
-String datetime = "";
+String datetime = "0";
 // ----- VELETA -----
 float previousLongitude = 0;
 float previousLatitude = 0;
