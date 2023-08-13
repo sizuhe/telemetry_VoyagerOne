@@ -29,6 +29,18 @@ Bsec iaqSensor;
 
 String output;
 
+ double prevT_bme = 0;
+
+ double currT_bme;
+
+ double deltaT_bme;
+
+ double preattitude = 0;
+
+ double fallSpeed;
+
+ double attitude;
+
 // ----- LORA SETTINGS -----
 // SPI pin configuration
 #define LORA_SCK 18
@@ -146,14 +158,23 @@ void loop() {
   String dataEncoders = encoders_getData();
   iaqSensor.run();
 
+  currT_bme = micros();
 
-String attitude = String(altitude(-100000));
+  attitude = altitude(-100000);
 
-//  datetime, BME iaq[0-500], co2Equivalent [por rellenar], breathVolatilesEquivalent [por rellenar], pressure [Pa],], altitude [m], attitude [m] ,temperature [ºc], humidity[%], acelZ[g], magTotal[uT], headDegrees[º] GPS [lat, long, altitude[m],speed[kph]] ENCONDER [windrpm] [windDirection]
+  deltaT_bme = (currT_bme - prevT_bme) / 1.0e6;
+
+  fallSpeed = (attitude - preattitude)/deltaT_bme ;
+
+  preattitude = attitude;
+
+  prevT_bme = currT_bme;
+
+//  datetime, BME iaq[0-500], co2Equivalent [por rellenar], breathVolatilesEquivalent [por rellenar], pressure [Pa],], altitude [m], attitude [m] ,temperature [ºc], humidity[%], fallSpeed[m/s] ,acelZ[g], magTotal[uT], headDegrees[º] GPS [lat, long, altitude[m],speed[kph]] ENCONDER [windrpm] [windDirection]
 
  
 
-  String dataBuffer = datetime + " " + String(iaqSensor.iaq) + " " + String(iaqSensor.co2Equivalent) + " " + String(iaqSensor.breathVocEquivalent) + " " + String(iaqSensor.pressure) + " " + String(altitude(1013.25))+ " " +  attitude + " " + String(iaqSensor.temperature) + " " + String(iaqSensor.rawHumidity)  +  " " + dataSensors + " " + dataGPS + " " + dataEncoders + " " + dataWindDir;   // Main DataBuffer
+  String dataBuffer = datetime + " " + String(iaqSensor.iaq) + " " + String(iaqSensor.co2Equivalent) + " " + String(iaqSensor.breathVocEquivalent) + " " + String(iaqSensor.pressure) + " " + String(altitude(1013.25))+ " " +  String(attitude) + " " + String(iaqSensor.temperature) + " " + String(iaqSensor.rawHumidity) + " " +  String(fallSpeed) + " " + dataSensors + " " + dataGPS + " " + dataEncoders + " " + dataWindDir;   // Main DataBuffer
 
 
 
@@ -227,8 +248,6 @@ float altitude(float SL){
 
       } 
 
-
-      
 
 }
 
