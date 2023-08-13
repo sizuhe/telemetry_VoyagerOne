@@ -18,6 +18,8 @@
 
 // ----- BME680 SETTINGS -----
 
+#define LED_BUILTIN 2
+
 // Helper functions declarations
 void checkIaqSensorStatus(void);
 void errLeds(void);
@@ -26,8 +28,6 @@ void errLeds(void);
 Bsec iaqSensor;
 
 String output;
-
-
 
 // ----- LORA SETTINGS -----
 // SPI pin configuration
@@ -77,13 +77,18 @@ void setup() {
 
   // ----- INITIALIZATION -----
   Serial.begin(9600);
+
+  delay(1000);
+
   gps_serial.begin(9600, SERIAL_8N1, ESP_RX, ESP_TX); // initialize Serial1 at 9600 baud, with 8 data bits, no parity, and 1 stop bit, using pins 16 (RX) and 17 (TX)
   LORA_SPI.begin(LORA_SCK, LORA_MISO, LORA_MOSI, LORA_NSS);
   SD_SPI.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
 
   iaqSensor.begin(0x77, Wire);
+
+  iaqSensor.setTemperatureOffset(5.0f);   // ADJUST MANUALLY IN EACH OCATION 
+
   checkIaqSensorStatus();
-  output = "\nBSEC library version " + String(iaqSensor.version.major) + "." + String(iaqSensor.version.minor) + "." + String(iaqSensor.version.major_bugfix) + "." + String(iaqSensor.version.minor_bugfix);
   Serial.println(output);
   bsec_virtual_sensor_t sensorList[13] = {
     BSEC_OUTPUT_IAQ,
@@ -102,8 +107,8 @@ void setup() {
   };
 
   iaqSensor.updateSubscription(sensorList, 13, BSEC_SAMPLE_RATE_LP);
+  
   checkIaqSensorStatus();
-
 
   // Modules pin configuration
   LoRa.setPins(LORA_NSS, LORA_RST, LORA_DI0);
@@ -139,34 +144,18 @@ void loop() {
   dataWindDir = gps_getWindDirection();
   String dataSensors = sensors_getData();
   String dataEncoders = encoders_getData();
-
-  unsigned long time_trigger = millis();
-  if (iaqSensor.run()) { // If new data is available
-    digitalWrite(LED_BUILTIN, LOW);
-    output = String(time_trigger);
-    output += ", " + String(iaqSensor.iaq);
-    output += ", " + String(iaqSensor.iaqAccuracy);
-    output += ", " + String(iaqSensor.staticIaq);
-    output += ", " + String(iaqSensor.co2Equivalent);
-    output += ", " + String(iaqSensor.breathVocEquivalent);
-    output += ", " + String(iaqSensor.rawTemperature);
-    output += ", " + String(iaqSensor.pressure);
-    output += ", " + String(iaqSensor.rawHumidity);
-    output += ", " + String(iaqSensor.gasResistance);
-    output += ", " + String(iaqSensor.stabStatus);
-    output += ", " + String(iaqSensor.runInStatus);
-    output += ", " + String(iaqSensor.temperature);
-    output += ", " + String(iaqSensor.humidity);
-    output += ", " + String(iaqSensor.gasPercentage);
-    Serial.println(output);
-    digitalWrite(LED_BUILTIN, HIGH);
-  } else {
-    checkIaqSensorStatus();
-  }
+  iaqSensor.run();
 
 
-  // BME680 [humidity[%], temperature[ºc], pressure[hPa], altitude[m], acelZ[g], magTotal[uT], headDegrees[º], gasResistance] | GPS [lat, long, altitude[m], speed[kph]] | ENCONDER [windrpm], [windDirection]. 
-  String dataBuffer = datetime + " " + dataSensors + " " + dataGPS + " " + dataEncoders + " " + dataWindDir;   // Main DataBuffer
+String attitude = String(altitude(-100000));
+
+//  datetime, BME iaq[0-500], co2Equivalent [por rellenar], breathVolatilesEquivalent [por rellenar], pressure [Pa],], altitude [m], attitude [m] ,temperature [ºc], humidity[%], acelZ[g], magTotal[uT], headDegrees[º] GPS [lat, long, altitude[m],speed[kph]] ENCONDER [windrpm] [windDirection]
+
+ 
+
+  String dataBuffer = datetime + " " + String(iaqSensor.iaq) + " " + String(iaqSensor.co2Equivalent) + " " + String(iaqSensor.breathVocEquivalent) + " " + String(iaqSensor.pressure) + " " + String(altitude(1013.25))+ " " +  attitude + " " + String(iaqSensor.temperature) + " " + String(iaqSensor.rawHumidity)  +  " " + dataSensors + " " + dataGPS + " " + dataEncoders + " " + dataWindDir;   // Main DataBuffer
+
+
 
   // Sending dataBuffer through LoRa
   LoRa.beginPacket();
@@ -178,6 +167,8 @@ void loop() {
   
   // ----- DEBUGGING -----
   Serial.println(dataBuffer);
+
+  delay(1000);
 }
 
 
@@ -216,3 +207,28 @@ void errLeds(void)
   digitalWrite(LED_BUILTIN, LOW);
   delay(100);
 }
+
+
+float altitude(float SL){
+
+    static float start =  iaqSensor.pressure / 100.0f ;
+
+    if (SL == -100000){
+
+       float atmospheric = iaqSensor.pressure/ 100.0f;
+
+       return 44330.0 * (1.0 - pow(atmospheric/start, 0.1903));   //PRESSURE SEA LEV
+
+    }else {
+
+        float atmospheric = iaqSensor.pressure/ 100.0f;
+
+        return 44330.0 * (1.0 - pow(atmospheric/SL, 0.1903));   //PRESSURE SEA LEV
+
+      } 
+
+
+      
+
+}
+

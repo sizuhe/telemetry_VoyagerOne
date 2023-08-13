@@ -75,7 +75,7 @@ String sensors_getData() {
 
   // ----- DATAPACKET INFO -----
   // humidity[%], temperature[ºc], pressure[hPa], altitude[m], acelZ[g], magTotal[uT], headDegrees[º], gasResistance
-  String dataPacket = + String(accelZ) + " " + String(magneticTotal) + " " + String(headingDegrees);
+  String dataPacket =  String(accelZ) + " " + String(magneticTotal) + " " + String(headingDegrees);
 
   return dataPacket;
 }
