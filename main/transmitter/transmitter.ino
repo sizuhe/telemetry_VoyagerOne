@@ -170,7 +170,7 @@ void loop() {
 
   prevT_bme = currT_bme;
 
-//  datetime, BME iaq[0-500], co2Equivalent [por rellenar], breathVolatilesEquivalent [por rellenar], pressure [Pa],], altitude [m], attitude [m] ,temperature [ºc], humidity[%], fallSpeed[m/s] ,acelZ[g], magTotal[uT], headDegrees[º] GPS [lat, long, altitude[m],speed[kph]] ENCONDER [windrpm] [windDirection]
+//  datetime, BME iaq[0--0], co2Equivalent [por rellenar], breathVolatilesEquivalent [por rellenar], pressure [Pa],], altitude [m], attitude [m] ,temperature [ºc], humidity[%], fallSpeed[m/s] ,acelZ[g], magTotal[uT], headDegrees[º] GPS [lat, long, altitude[m],speed[kph]] ENCONDER [windrpm] [windDirection]
 
  
 
@@ -247,7 +247,6 @@ float altitude(float SL){
         return 44330.0 * (1.0 - pow(atmospheric/SL, 0.1903));   //PRESSURE SEA LEV
 
       } 
-
 
 }
 

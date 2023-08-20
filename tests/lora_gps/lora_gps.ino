@@ -4,7 +4,8 @@
 
 // ----- LORA SETTINGS -----
 // SPI pin configuration
-// #define LORA_SCK 18
+// #d7
+#define RA_SCK 18
 // #define LORA_MISO 19
 // #define LORA_MOSI 23
 // #define LORA_NSS 5
@@ -27,7 +28,7 @@ TinyGPSPlus gps;
 void setup() {
 
   // ----- INITIALIZATION -----
-  Serial.begin(115200);
+  Serial.begin(9600);
   gps_serial.begin(9600, SERIAL_8N1, ESP_RX, ESP_TX); // initialize Serial1 at 9600 baud, with 8 data bits, no parity, and 1 stop bit, using pins 16 (RX) and 17 (TX)
   // LORA_SPI.begin(LORA_SCK, LORA_MISO, LORA_MOSI, LORA_NSS);
   
@@ -55,6 +56,7 @@ void loop() {
   String dataGPS = String(gps.location.lat(), 6) + "," + String(gps.location.lng(), 6);
 
   // humidity[%], temperature[ºc], pressure[hPa], altitude[m], acelZ[g], magTotal[uT], headDegrees[º], gasResistance, lat, long, windrpm, windangle [º], anglequad. 
+ 
   String dataBuffer = dataGPS;   // Main DataBuffer
 
   // Sending dataBuffer through LoRa
