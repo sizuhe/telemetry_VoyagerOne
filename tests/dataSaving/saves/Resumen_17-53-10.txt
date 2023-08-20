@@ -1,0 +1,15 @@
+                                       Max        Min        Mean
+Humedad [%]                          28.93      28.88      28.914
+Temperatura [C]                      36.48      36.33      36.386
+Presion atmos [hPa]                 849.51     849.48     849.488
+Altitud [m]                        1462.54    1462.35    1462.466
+Aceleracion en eje vertical [g]       1.00       0.99       0.992
+Campo magnetico [uT]                 81.81      61.68      68.392
+Direccion norte [degrees]            47.68      33.51      38.294
+Gas CAMBIAR                      335518.00  330136.00  332346.000
+Latitud                               0.00       0.00       0.000
+Longitud                              0.00       0.00       0.000
+Altitud del GPS [m]                   0.00       0.00       0.000
+Velocidad horizontal [m s]            0.00       0.00       0.000
+Velocidad del viento [m s]          901.44     901.44     901.440
+Direccion del viento                  0.00       0.00       0.000

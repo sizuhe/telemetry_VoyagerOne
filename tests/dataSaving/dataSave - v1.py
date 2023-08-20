@@ -1,5 +1,3 @@
-# Archivos guardados por separacion de comas
-
 import serial.tools.list_ports
 import os
 import time
@@ -26,7 +24,7 @@ if len(serial.tools.list_ports.comports()) != 0:
                         break
 
 #* ----- Manual mode -----
-# print('Puertos serial conectados:',*serial.tools.list_ports.comports())
+# print('Puertos serial conectados:',*serial.tools.list_ports.comports())g
 # serialInst.port = 'COM3'
 # serialInst.open()
 
