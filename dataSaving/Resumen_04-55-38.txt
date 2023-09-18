@@ -1,0 +1,19 @@
+                                 Max       Min          Mean
+NoUse                          55.00      1.00     28.000000
+IAQ                            50.00     50.00     50.000000
+CO2                           600.00    600.00    600.000000
+VOC                             0.50      0.50      0.500000
+Atmos [Pa]                  94572.41  94558.21  94566.227455
+Altitud [m]                   579.26    578.01    578.551455
+Altura [m]                      1.90      0.63      1.181273
+Temperatura [C]                31.63     31.47     31.534000
+Humedad [%]                    42.51     41.57     41.988182
+Fall speed [ms]                 0.46     -0.26      0.009636
+Acel en vertical [g]            0.99      0.98      0.989273
+Campo magnetico [uT]           86.64     77.60     85.156182
+Direccion norte [grados]      158.03    152.95    155.277091
+Latitud                         0.00      0.00      0.000000
+Longitud                        0.00      0.00      0.000000
+Altitud del GPS [m]             0.00      0.00      0.000000
+Velocidad horizontal [kmh]      0.00      0.00      0.000000
+Direccion del viento            0.00      0.00      0.000000

@@ -3,7 +3,7 @@ Codigo completamente probado con data guardada en SD y por estacion terrena.
 
 INSTRUCCIONES
 - Desde CMD dirigirse a la carpeta con el archivo que se desea analizar
-- Revisar linea 65
+- Revisar linea 66
 
 FALTANTE
 - Verificar unidades y datos en listas.
@@ -18,14 +18,18 @@ import os
 
 
 listTimes = []
-listHumidity = []
-listTemperature = []
+listIAQ = []
+listCO2 = []
+listVOC = []
 listPressure = []
 listAltitude = []
+listHeight = []
+listTemperature = []
+listHumidity = []
+listFallSpeed = []
 listAcelZ = []
 listmagTotal = []
 listheadDegrees = []
-listgasResistance = []
 listLat = []
 listLong = []
 listAltitudeGPS = []
@@ -38,20 +42,17 @@ listdataMin = []
 listdataMean = []
 listDatas = []
 
-lists = [listHumidity, listTemperature, listPressure, listAltitude, listAcelZ, listmagTotal,
-         listheadDegrees, listgasResistance, listLat, listLong, listAltitudeGPS, listhorizontalSpeed,
-         listwindRPM, listwindDir]
 
-listNames = ['Humedad [%]', 'Temperatura [C]', 'Presion atmos [hPa]', 'Altitud [m]',
-             'Aceleracion en eje vertical [g]', 'Campo magnetico [uT]', 'Direccion norte [degrees]',
-             'Gas CAMBIAR', 'Latitud', 'Longitud', 'Altitud del GPS [m]', 'Velocidad horizontal [m s]',
-             'Velocidad del viento [m s]', 'Direccion del viento']
+lists = [listTimes, listIAQ, listCO2, listVOC, listPressure, listAltitude, listHeight, listTemperature, listHumidity, listFallSpeed, 
+         listAcelZ, listmagTotal, listheadDegrees, listLat, listLong, listAltitudeGPS, listhorizontalSpeed, listwindRPM, listwindDir]
 
-listNames_nounits = ['Humedad', 'Temperatura', 'Presion atmos', 'Altitud',
-             'Aceleracion en eje vertical', 'Campo magnetico', 'Direccion norte',
-             'Gas CAMBIAR', 'Latitud', 'Longitud', 'Altitud del GPS', 'Velocidad horizontal',
-             'Velocidad del viento', 'Direccion del viento']
-#! VERIFICAR UNIDADES Y DATOS
+listNames = ['NoUse', 'IAQ', 'CO2', 'VOC', 'Atmos [Pa]', 'Altitud [m]', 'Altura [m]', 'Temperatura [C]', 'Humedad [%]', 'Fall speed [ms]',
+             'Acel en vertical [g]', 'Campo magnetico [uT]', 'Direccion norte [grados]', 'Latitud', 'Longitud', 'Altitud del GPS [m]',
+             'Velocidad horizontal [kmh]', 'Direccion del viento']
+
+listNames_nounits = ['NoUse', 'IAQ', 'CO2', 'VOC', 'Atmos', 'Altitud', 'Altura', 'Temperatura', 'Humedad', 'Fall speed',
+             'Acel en vertical', 'Campo magnetico', 'Direccion norte', 'Latitud', 'Longitud', 'Altitud del GPS',
+             'Velocidad horizontal', 'Direccion del viento']
 
 
 # Creating folder           
@@ -61,11 +62,10 @@ mainPath = mainPath.replace('dataAnalysis.py','pdfs')
 if not os.path.exists(mainPath):
     os.makedirs(mainPath)
 
-dataFile = "data-volta_9-8-2023_23-16-13.txt"    #! ----- ARCHIVO A ANALIZAR -----
+dataFile = "250816-08-49_Data.txt"    #! ----- ARCHIVO A ANALIZAR -----
 
-#! Posible error que depende de la carpeta abierta en cmd
-DATADIR = "sd_data/" + dataFile
-FILEPATH = 'Resumen_' + time.strftime('%H-%M-%S') + '.txt'
+DATADIR = "dataSaving/saves/" + dataFile
+FILEPATH = 'dataSaving/Resumen_' + time.strftime('%H-%M-%S') + '.txt'
 times = 0
 
 
@@ -92,22 +92,26 @@ with open(DATADIR, 'r') as file:
             except:
                 continue
         
-        if len(lines)==15:      #! Cambiar segun tamano de nueva cadena de datos
+        if (len(lines)-1):
             print(lines)    # Debugging
-            listHumidity.append(float(lines[1]))
-            listTemperature.append(float(lines[2]))
-            listPressure.append(float(lines[3]))
-            listAltitude.append(float(lines[4]))
-            listAcelZ.append(float(lines[5]))
-            listmagTotal.append(float(lines[6]))
-            listheadDegrees.append(float(lines[7]))
-            listgasResistance.append(float(lines[8]))
-            listLat.append(float(lines[9]))
-            listLong.append(float(lines[10]))
-            listAltitudeGPS.append(float(lines[11]))
-            listhorizontalSpeed.append(float(lines[12]))
-            listwindRPM.append(float(lines[13]))
-            listwindDir.append(float(lines[14]))
+            listIAQ.append(float(lines[1]))
+            listCO2.append(float(lines[2]))
+            listVOC.append(float(lines[3]))
+            listPressure.append(float(lines[4]))
+            listAltitude.append(float(lines[5]))
+            listHeight.append(float(lines[6]))
+            listTemperature.append(float(lines[7]))
+            listHumidity.append(float(lines[8]))
+            listFallSpeed.append(float(lines[9]))
+            listAcelZ.append(float(lines[10]))
+            listmagTotal.append(float(lines[11]))
+            listheadDegrees.append(float(lines[12]))
+            listLat.append(float(lines[13]))
+            listLong.append(float(lines[14]))
+            listAltitudeGPS.append(float(lines[15]))
+            listhorizontalSpeed.append(float(lines[16]))
+            listwindRPM.append(float(lines[17]))
+            # listwindDir.append(float(lines[18]))
 
 
 #* ----- Code for time management -----
@@ -119,6 +123,9 @@ for _ in range(len(listHumidity)):
 #* ----- Plotting and analysis -----
 with open(FILEPATH, 'w') as file:
     for pos, data in enumerate(lists):
+        if pos==len(listNames):
+            break
+        
         plot1, = plt.plot(listTimes, listAltitude, color='r')
         plt.ticklabel_format(useOffset=False)
         plt.xlabel("Tiempo [s]", weight='bold')
@@ -142,10 +149,10 @@ with open(FILEPATH, 'w') as file:
                 ["Altitud", listNames_nounits[pos], "Maximo", "Minimo", "Promedio"])
         plt.tight_layout()
         
-        if pos!=3:
-            nameFile = 'pdfs/' + 'Grafica_' + time.strftime('%H-%M-%S') + '_' + str(listNames[pos]) + '.pdf'
-            plt.savefig(nameFile)
-            # plt.show()
+        # if pos!=5:
+        nameFile = 'dataSaving/pdfs/' + 'Grafica_' + time.strftime('%H-%M-%S') + '_' + str(listNames[pos]) + '.pdf'
+        plt.savefig(nameFile)
+        # plt.show()
         plt.clf()
     
     #! ----- Resume data saving -----
